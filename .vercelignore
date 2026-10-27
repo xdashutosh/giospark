@@ -1,0 +1,12 @@
+# Upload only the website. Everything else in this folder (source files, the logo archive,
+# the content .docx, send.php, README, tools/) stays private.
+/*
+!api
+!assets
+!index.html
+!enquiry.html
+!contact.html
+!404.html
+!robots.txt
+!sitemap.xml
+!vercel.json

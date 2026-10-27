@@ -1,0 +1,12 @@
+# Private source files — keep them out of the Git repository (and out of the website)
+/GIO Spark Website Content.docx
+/Logo.rar
+/WhatsApp Image 2026-10-22 at 16.05.43.jpeg
+/source/
+
+# Local secrets and tooling
+.env
+.env.*
+.vercel/
+node_modules/
+.DS_Store

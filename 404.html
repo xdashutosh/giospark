@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Page not found | GIO Spark</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#37c6f1">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Manrope:wght@400..800&family=Kalam:wght@700&display=swap">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    .lost { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 40px var(--gutter); text-align: center; color: #062f5e;
+      background: radial-gradient(70% 55% at 50% 40%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 70%), linear-gradient(180deg, #37c6f1 0%, #def6ff 100%); }
+    .lost__logo { display: inline-block; margin-bottom: 26px; }
+    .lost__logo img { height: 56px; width: auto; }
+    .lost__drop { width: 120px; height: 160px; margin: 0 auto 10px; animation: bob 2.6s ease-in-out infinite; }
+    .lost__code { font-family: var(--font-display); font-weight: 800; font-stretch: 75%; font-size: clamp(110px, 22vw, 220px); line-height: 0.8; letter-spacing: -0.02em; }
+    .lost h1 { margin: 16px 0 10px; font-family: var(--font-display); font-weight: 800; font-stretch: 80%; font-size: clamp(30px, 4vw, 46px); line-height: 1; }
+    .lost p { max-width: 420px; margin: 0 auto; color: #0a3a73; }
+    .lost .hand { margin-top: 14px; font-size: 24px; }
+    .lost__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
+    @keyframes bob { 50% { transform: translateY(-10px) rotate(-3deg); } }
+  </style>
+</head>
+<body>
+  <main class="lost">
+    <div>
+      <a class="lost__logo" href="/" aria-label="GIO Spark — home"><img src="/assets/img/logo-640.png" alt="GIO Spark — Goodness In Original" width="640" height="234"></a>
+      <svg class="lost__drop" viewBox="0 0 230 270" aria-hidden="true">
+        <defs><linearGradient id="g404" x1=".3" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#b6f0ff"/><stop offset=".55" stop-color="#34bdf3"/><stop offset="1" stop-color="#0b66d8"/></linearGradient></defs>
+        <path d="M112 10S42 92 42 142a70 70 0 0 0 140 0c0-50-70-132-70-132z" fill="url(#g404)" stroke="#062f5e" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M68 140c0-22 12-44 24-60" stroke="#fff" stroke-width="10" stroke-linecap="round" fill="none" opacity=".75"/>
+        <ellipse cx="96" cy="134" rx="8" ry="10" fill="#062f5e"/>
+        <ellipse cx="134" cy="134" rx="8" ry="10" fill="#062f5e"/>
+        <path d="M98 170q17-14 34 0" stroke="#062f5e" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="80" cy="154" rx="9" ry="5.5" fill="#ff8fb1" opacity=".6"/>
+        <ellipse cx="150" cy="154" rx="9" ry="5.5" fill="#ff8fb1" opacity=".6"/>
+      </svg>
+      <div class="lost__code" aria-hidden="true">404</div>
+      <h1>This drop has evaporated.</h1>
+      <p>The page you're looking for doesn't exist or has moved.</p>
+      <p class="hand">Drink pure, <em>live pure!</em> ♡</p>
+      <div class="lost__actions">
+        <a class="btn btn--primary" href="/">Back to home</a>
+        <a class="btn btn--ghost" href="/enquiry.html">Send an enquiry</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

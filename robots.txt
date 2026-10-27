@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://giospark.com/sitemap.xml
