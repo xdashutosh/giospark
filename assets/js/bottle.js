@@ -150,6 +150,15 @@
     R(shape.yRing + 0.01, NECK_R + 0.06, 2, 0);
     R(shape.yRing + 0.024, NECK_R + 0.052, 2, 0);
     R(shape.yRing + 0.03, NECK_R + 0.004, 2, 0);
+    var threadTop = spec.H - 0.06;
+    var threadBottom = shape.yRing + 0.08;
+    for (var k = 0; k < 3; k++) {
+      var ty = threadBottom + (threadTop - threadBottom) * (k / 2);
+      R(ty - 0.018, NECK_R, 2, 0);
+      R(ty - 0.006, NECK_R + 0.016, 2, 0);
+      R(ty + 0.006, NECK_R + 0.016, 2, 0);
+      R(ty + 0.018, NECK_R, 2, 0);
+    }
     R(spec.H - 0.03, NECK_R, 2, 0);
     R(spec.H - 0.012, NECK_R - 0.012, 2, 0);
     R(spec.H - 0.012, NECK_R - 0.032, 2, 0);
@@ -271,9 +280,37 @@
     '}'
   ].join('\n');
 
+  // Bottle shell. uInflate < 1 shrinks everything below the neck back into a PET preform:
+  // a narrow tube with a rounded tip that keeps the finished neck (as in stretch blow moulding).
+  var GLASS_VERT = [
+    'uniform float uInflate; uniform float uNeckY; uniform float uPreR; uniform float uPreLen;',
+    'varying vec3 vWN; varying vec3 vWP; varying vec3 vLP; varying vec2 vUv;',
+    'void main() {',
+    '  vec3 p = position;',
+    '  vec3 n = normal;',
+    '  if (uInflate < 0.999 && p.y < uNeckY) {',
+    '    float t = clamp((uNeckY - p.y) / uNeckY, 0.0, 1.0);',
+    '    float r = length(p.xz);',
+    '    vec2 dir = r > 0.0001 ? p.xz / r : vec2(0.0);',
+    '    float tip = clamp((t - 0.84) / 0.16, 0.0, 1.0);',
+    '    float pr = uPreR * sqrt(max(0.0, 1.0 - tip * tip));',
+    '    vec3 pre = vec3(dir.x * pr, uNeckY - t * uPreLen, dir.y * pr);',
+    '    vec3 preN = normalize(vec3(dir.x * (1.0 - tip), -tip - 0.0001, dir.y * (1.0 - tip)));',
+    '    float k = smoothstep(0.0, 1.0, uInflate);',
+    '    p = mix(pre, p, k);',
+    '    n = normalize(mix(preN, n, k));',
+    '  }',
+    '  vLP = p; vUv = uv;',
+    '  vec4 wp = modelMatrix * vec4(p, 1.0);',
+    '  vWP = wp.xyz;',
+    '  vWN = normalize(mat3(modelMatrix) * n);',
+    '  gl_Position = projectionMatrix * viewMatrix * wp;',
+    '}'
+  ].join('\n');
+
   // Clear PET: tinted see-through shell, fresnel edges, procedural studio softboxes.
   var GLASS_FRAG = [
-    'uniform vec3 uTint; uniform float uAlpha; uniform float uEdge; uniform float uSpec;',
+    'uniform vec3 uTint; uniform float uAlpha; uniform float uEdge; uniform float uSpec; uniform float uHeat;',
     'uniform float uUvY; uniform float uUvAmt; uniform vec3 uUvColor;',
     'varying vec3 vWN; varying vec3 vWP; varying vec3 vLP;',
     'float band(float x, float c, float w, float s) { return 1.0 - smoothstep(w, w + s, abs(x - c)); }',
@@ -302,7 +339,8 @@
     '  vec3 col = mix(uTint, uUvColor, clamp(uvb * 1.6, 0.0, 1.0));',
     '  float a = uAlpha + edge + uvb * 0.75;',
     '  col = mix(col, vec3(1.0), hl);',
-    '  a = clamp(a + hl, 0.0, 1.0);',
+    '  col = mix(col, vec3(1.0, 0.48, 0.1), uHeat * (0.8 + edge * 0.2));',
+    '  a = clamp(a + hl + uHeat * (0.5 + edge * 0.35), 0.0, 1.0);',
     '  gl_FragColor = linearToOutputTexel(vec4(col, a));',
     '}'
   ].join('\n');
@@ -634,6 +672,17 @@
     g.restore();
   }
 
+  // centred text, shrunk until it fits maxW
+  function fitText(g, text, x, y, weight, size, maxW, family) {
+    var px = size;
+    g.font = weight + ' ' + px + 'px ' + family;
+    while (g.measureText(text).width > maxW && px > 8) {
+      px -= 1;
+      g.font = weight + ' ' + px + 'px ' + family;
+    }
+    g.fillText(text, x, y);
+  }
+
   // Front label, recreated from the GIO Spark packaging: dark navy panel with a gold
   // frame, the logo standing on its side, a snowy mountain lake and the net quantity.
   function drawLabel(spec, logo) {
@@ -642,8 +691,8 @@
     var c = document.createElement('canvas');
     c.width = W; c.height = H;
     var g = c.getContext('2d');
-    var DISPLAY = '"Bricolage Grotesque", "Arial Narrow", sans-serif';
-    var BODY = 'Manrope, "Helvetica Neue", Arial, sans-serif';
+    var FONT = 'Poppins, "Helvetica Neue", Arial, sans-serif';
+    var MAXW = W - 100;
     var GOLD = '#e3a623';
     var rad = 40;
 
@@ -698,7 +747,7 @@
       g.fillStyle = '#fff';
       g.textAlign = 'center';
       g.textBaseline = 'middle';
-      g.font = 'italic 800 150px ' + DISPLAY;
+      g.font = '700 130px ' + FONT;
       g.fillText('GioSpark', 0, 0);
       g.restore();
     }
@@ -717,9 +766,8 @@
     g.fillStyle = '#ffffff';
     g.textAlign = 'center';
     g.textBaseline = 'alphabetic';
-    g.font = '800 46px ' + DISPLAY;
-    g.fillText('PURE WATER,', W / 2, 104);
-    g.fillText('BRIGHTER TOMORROW!', W / 2, 156);
+    fitText(g, 'PURE WATER,', W / 2, 104, 700, 40, MAXW, FONT);
+    fitText(g, 'BRIGHTER TOMORROW!', W / 2, 154, 700, 40, MAXW, FONT);
 
     // RO + UV ozonated seal (top right)
     var sx = W * 0.8, sy = 252, sr = 50;
@@ -728,10 +776,8 @@
     g.beginPath(); g.arc(sx, sy, sr, 0, TAU); g.stroke();
     g.lineWidth = 1.5;
     g.beginPath(); g.arc(sx, sy, sr - 8, 0, TAU); g.stroke();
-    g.font = '800 21px ' + DISPLAY;
-    g.fillText('RO + UV', sx, sy - 2);
-    g.font = '800 12px ' + BODY;
-    g.fillText('OZONATED', sx, sy + 18);
+    fitText(g, 'RO + UV', sx, sy - 2, 700, 18, sr * 1.5, FONT);
+    fitText(g, 'OZONATED', sx, sy + 17, 600, 11, sr * 1.5, FONT);
 
     // separator, claims and net quantity
     var sepY = H - 372;
@@ -739,16 +785,12 @@
     g.lineWidth = 3;
     g.beginPath(); g.moveTo(44, sepY); g.lineTo(W - 44, sepY); g.stroke();
     g.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    g.font = '700 16px ' + BODY;
-    g.fillText('RO  •  UV  •  OZONATED  •  ADDED MINERALS', W / 2, sepY - 14);
+    fitText(g, 'RO  •  UV  •  OZONATED  •  ADDED MINERALS', W / 2, sepY - 14, 600, 15, MAXW, FONT);
     g.fillStyle = '#ffffff';
-    g.font = '800 46px ' + DISPLAY;
-    g.fillText('PURE  ·  SAFE  ·  TRUSTED', W / 2, H - 296);
-    g.font = '800 30px ' + BODY;
-    g.fillText('PACKAGED DRINKING WATER', W / 2, H - 226);
-    g.fillText('WITH ADDED MINERALS', W / 2, H - 186);
-    g.font = '700 32px ' + BODY;
-    g.fillText('Net Quantity: ' + spec.qty, W / 2, H - 92);
+    fitText(g, 'PURE  ·  SAFE  ·  TRUSTED', W / 2, H - 296, 700, 40, MAXW, FONT);
+    fitText(g, 'PACKAGED DRINKING WATER', W / 2, H - 226, 700, 28, MAXW, FONT);
+    fitText(g, 'WITH ADDED MINERALS', W / 2, H - 186, 700, 28, MAXW, FONT);
+    fitText(g, 'Net Quantity: ' + spec.qty, W / 2, H - 92, 600, 30, MAXW, FONT);
 
     return c;
   }
@@ -790,7 +832,9 @@
       uvY: { value: -10 },
       uvAmt: { value: 0 },
       uvColor: { value: C('#9b6bff') },
-      wrap: { value: 1 }
+      wrap: { value: 1 },
+      inflate: { value: 1 },
+      heat: { value: 0 }
     };
 
     var glassU = function (alpha, edge) {
@@ -799,13 +843,19 @@
         uAlpha: { value: alpha },
         uEdge: { value: edge },
         uSpec: { value: 1.6 },
-        uUvY: self.u.uvY, uUvAmt: self.u.uvAmt, uUvColor: self.u.uvColor
+        uUvY: self.u.uvY, uUvAmt: self.u.uvAmt, uUvColor: self.u.uvColor,
+        uHeat: self.u.heat,
+        uInflate: self.u.inflate,
+        uNeckY: { value: shape.yNeck },
+        uPreR: { value: NECK_R * 0.86 },
+        uPreLen: { value: shape.yNeck * 0.42 }
       };
     };
 
     var outerGeo = makeShell(shape, spec, stage.mobile);
-    this.glassBack = new THREE.Mesh(outerGeo, shaderMat(GLASS_FRAG, glassU(0.03, 0.22), { side: THREE.BackSide }));
-    this.glassFront = new THREE.Mesh(outerGeo, shaderMat(GLASS_FRAG, glassU(0.04, 0.5)));
+    this.glassBack = new THREE.Mesh(outerGeo, shaderMat(GLASS_FRAG, glassU(0.03, 0.22), { side: THREE.BackSide, vert: GLASS_VERT }));
+    this.glassFront = new THREE.Mesh(outerGeo, shaderMat(GLASS_FRAG, glassU(0.04, 0.5), { vert: GLASS_VERT }));
+    this.glassBack.frustumCulled = this.glassFront.frustumCulled = false;
     this.glassBack.renderOrder = 2;
     this.glassFront.renderOrder = 6;
 
@@ -947,14 +997,20 @@
     var bob = Math.sin(t * 1.15 + this.spec.A * 3) * 0.012 * S.float;
     this.root.position.set((S.x + o.x) * st.vw, (S.y + o.y + I.y + bob) * st.vh, 0);
 
-    this.tilt.rotation.z = S.tiltZ + I.tilt - st.pointer.sx * 0.08 * S.follow;
+    this.tilt.rotation.z = S.tiltZ + I.tilt;
     this.tilt.rotation.x = S.tiltX + st.pointer.sy * 0.1 * S.follow;
     var sway = Math.sin(t * 0.55) * 0.42 * S.sway;
     this.spin.rotation.y = S.spin + o.spin + I.spin + sway + st.dragAngle;
 
     // uniforms
     this.u.time.value = t;
-    var fill = Math.max(0, Math.min(1, I.fill));
+    var empty = S.empty > 0.5;
+    this.u.inflate.value = S.inflate;
+    this.u.heat.value = S.heat;
+    this.label.visible = !empty;
+    this.cap.visible = !empty;
+    var fill = empty ? 0 : Math.max(0, Math.min(1, I.fill));
+    this.waterBack.visible = this.waterFront.visible = fill > 0.001;
     var fillY = shape.fillMin + (shape.fillMax - shape.fillMin) * fill;
     this.u.fillY.value = fill <= 0.001 ? -1 : fillY;
     this.meniscus.visible = fill > 0.001;
@@ -1048,8 +1104,9 @@
 
     // Shared, GSAP-animatable state. x/y/h are fractions of the viewport.
     this.shared = {
-      x: 0, y: 0, h: 0.72, spin: 0, tiltZ: -0.1, tiltX: 0.06, sway: 1, float: 1, follow: 1,
-      wrap: 1, capLift: 0, capSpin: 0, uv: 0, uvY: 0, ro: 0, bubbles: 0, minerals: 0
+      x: 0, y: 0, h: 0.72, spin: 0, tiltZ: 0, tiltX: 0.03, sway: 1, float: 1, follow: 1,
+      wrap: 1, capLift: 0, capSpin: 0, uv: 0, uvY: 0, ro: 0, bubbles: 0, minerals: 0,
+      empty: 0, inflate: 1, heat: 0
     };
     this.intro = { y: 0, spin: 0, fill: 1, pour: 0, streamCut: 0, capLift: 0, capSpin: 0, bubbles: 0, tilt: 0 };
     this.bottles = {};
@@ -1138,10 +1195,8 @@
   function loadFonts() {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
     var wait = Promise.all([
-      document.fonts.load('800 40px "Bricolage Grotesque"'),
-      document.fonts.load('italic 800 40px "Bricolage Grotesque"'),
-      document.fonts.load('700 20px Manrope'),
-      document.fonts.load('600 20px Manrope')
+      document.fonts.load('700 40px Poppins'),
+      document.fonts.load('600 20px Poppins')
     ]).catch(function () {});
     var timeout = new Promise(function (r) { setTimeout(r, 2500); });
     return Promise.race([wait, timeout]);

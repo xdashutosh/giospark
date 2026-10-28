@@ -56,6 +56,8 @@ $form  = (($in['form'] ?? '') === 'contact') ? 'Contact message' : 'New enquiry'
 
 $labels = [
     'type'                    => 'Enquiry type',
+    'pet_use'                 => 'Bottles for',
+    'pet_quantity'            => 'Bottles needed',
     'territory'               => 'Territory',
     'distribution_experience' => 'Distribution experience',
     'storage'                 => 'Storage space',

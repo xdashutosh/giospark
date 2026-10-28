@@ -1,7 +1,7 @@
 /*!
  * GIO Spark — enquiry page
- * URL prefill (?type= / ?product=), distributor-only fields and a 3D bottle
- * that follows the bottle size picked in the form.
+ * URL prefill (?type= / ?product=), type-specific fields (distributorship, empty PET bottles)
+ * and a 3D bottle that follows the size picked in the form.
  */
 (function () {
   'use strict';
@@ -26,13 +26,30 @@
     if (box) box.checked = true;
   }
 
-  /* ---------------- Distributor-only fields ---------------- */
-  var cond = document.getElementById('distributorFields');
+  /* ---------------- Fields that only apply to one enquiry type ---------------- */
+  var conditionals = Array.prototype.slice.call(document.querySelectorAll('.conditional[data-for]'));
   var refresh = function () { if (window.ScrollTrigger) ScrollTrigger.refresh(); };
 
+  function chosenType() {
+    var checked = form.querySelector('input[name="type"]:checked');
+    return checked ? checked.dataset.key : '';
+  }
+
   function syncConditional(animate) {
-    if (!cond) return;
-    var on = !!form.querySelector('input[name="type"][data-key="distributor"]:checked');
+    conditionals.forEach(function (cond) { toggleBlock(cond, cond.dataset.for === chosenType(), animate); });
+    if (stage) {
+      stage.shared.empty = chosenType() === 'pet' ? 1 : 0;
+    } else {
+      var img = document.querySelector('.subhero__fallback');
+      if (img && current) img.src = fallbackSrc(current);
+    }
+  }
+
+  function fallbackSrc(id) {
+    return chosenType() === 'pet' ? 'assets/img/pet/empty-' + id + '.png' : 'assets/img/bottle-' + id + '.png';
+  }
+
+  function toggleBlock(cond, on, animate) {
     var fields = cond.querySelectorAll('input, select, textarea');
     if (on === !cond.hidden) return;
     var tween = animate && hasGsap && !reduce;
@@ -52,14 +69,14 @@
       else done();
     }
   }
-  syncConditional(false);
-
   /* ---------------- 3D bottle in the hero ---------------- */
   var ORDER = ['200', '500', '1000'];
   var canvas = document.getElementById('enquiryStage');
   var art = document.querySelector('.subhero__art');
   var stage = null;
   var current = null;
+
+  syncConditional(false);
 
   function chosenSize() {
     var checked = form.querySelector('input[name="sizes"]:checked');
@@ -72,7 +89,7 @@
     current = id;
     if (!stage) {
       var img = document.querySelector('.subhero__fallback');
-      if (img) img.src = 'assets/img/bottle-' + id + '.png';
+      if (img) img.src = fallbackSrc(id);
       return;
     }
     var next = stage.bottles[id].off;
@@ -106,17 +123,17 @@
     stage = s;
     var S = stage.shared;
     var I = stage.intro;
-    gsap.set(S, { x: 0, y: -0.02, h: 0.74, tiltZ: -0.14, tiltX: 0.05, sway: 1, follow: 1 });
+    gsap.set(S, { x: 0, y: -0.02, h: 0.74, tiltZ: 0, tiltX: 0.03, sway: 1, follow: 1 });
+    S.empty = chosenType() === 'pet' ? 1 : 0;
     gsap.ticker.add(stage.tick);
 
     // drop in, then fill + cap like on the home page (shorter)
-    gsap.set(I, { y: -1.2, spin: -Math.PI, fill: 0.15, capLift: 3, capSpin: Math.PI * 4, tilt: 0.14 });
+    gsap.set(I, { y: -1.2, spin: -Math.PI, fill: 0.15, capLift: 3, capSpin: Math.PI * 4, tilt: 0 });
     showSize(chosenSize(), true);
     gsap.timeline({ delay: 0.25 })
       .to(I, { y: 0, spin: 0, duration: 1.2, ease: 'power3.out' })
       .to(I, { fill: 1, duration: 1.1, ease: 'power1.inOut' }, 0.5)
-      .to(I, { capLift: 0, capSpin: 0, duration: 0.8, ease: 'power3.out' }, 1.4)
-      .to(I, { tilt: 0, duration: 1.2, ease: 'elastic.out(1, 0.5)' }, 2.1);
+      .to(I, { capLift: 0, capSpin: 0, duration: 0.8, ease: 'power3.out' }, 1.4);
 
     window.addEventListener('pointermove', function (e) {
       if (e.pointerType === 'touch') return;

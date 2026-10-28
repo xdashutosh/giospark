@@ -17,7 +17,7 @@
     '500': { top: '#37c6f1', bottom: '#def6ff', ink: '#062f5e', accent: '#0b8ff0' },
     '1000': { top: '#ffc93f', bottom: '#fff4d4', ink: '#13265c', accent: '#e9a70b' }
   };
-  // copy from the GIO Spark launch posters
+  // copy from the GIO Spark posters
   var COPY = {
     '200': {
       size: '200 ml',
@@ -138,7 +138,7 @@
     I = stage.intro;
     ORDER.forEach(function (id, i) { stage.bottles[id].off.visible = i === index; });
     // hidden until the intro brings the bottle in
-    gsap.set(I, { y: -1.2, spin: -Math.PI * 1.3, fill: 0, pour: 0, streamCut: 0, capLift: 4.5, capSpin: TAU * 2, bubbles: 0, tilt: 0.12 });
+    gsap.set(I, { y: -1.2, spin: -Math.PI * 1.3, fill: 0, pour: 0, streamCut: 0, capLift: 4.5, capSpin: TAU * 2, bubbles: 0, tilt: 0 });
     gsap.ticker.add(stage.tick);
 
     window.addEventListener('pointermove', function (e) {
@@ -395,8 +395,7 @@
         .to(I, { bubbles: 0, duration: 1.4 }, 2.8)
         .to(I, { capLift: 0, duration: 0.85, ease: 'power3.out' }, 2.7)
         .to(I, { capSpin: 0, duration: 0.85, ease: 'power2.out' }, 2.7)
-        .add(function () { splash('top'); }, 3.42)
-        .to(I, { tilt: 0, duration: 1.4, ease: 'elastic.out(1, 0.5)' }, 3.45);
+        .add(function () { splash('top'); }, 3.42);
     } else {
       tl.from('.hero__fallback', { yPercent: 30, autoAlpha: 0, duration: 1.2 }, 0.2);
     }
@@ -416,7 +415,7 @@
         : { hero: { x: 0, y: 0.075, h: 0.5 }, proc: { x: 0, y: 0.06, h: 0.42 } };
 
       gsap.set(S, {
-        x: L.hero.x, y: L.hero.y, h: L.hero.h, tiltZ: -0.12, tiltX: 0.06, sway: 1, float: 1, follow: 1,
+        x: L.hero.x, y: L.hero.y, h: L.hero.h, tiltZ: 0, tiltX: 0.03, sway: 1, float: 1, follow: 1,
         spin: 0, wrap: 1, capLift: 0, capSpin: 0, uv: 0, uvY: 0, ro: 0, bubbles: 0, minerals: 0
       });
 
@@ -482,7 +481,7 @@
       .to(S, { capLift: 0, duration: 1, ease: 'power3.out' }, 9.3)
       .to(S, { capSpin: 0, duration: 1, ease: 'power2.out' }, 9.3)
       .to(S, { spin: TAU * 2, duration: 1.3, ease: 'power2.inOut' }, 9.05)
-      .to(S, { tiltZ: -0.08, sway: 0.3, duration: 0.8 }, 10.2)
+      .to(S, { sway: 0.3, duration: 0.8 }, 10.2)
       .to({}, { duration: 0.6 }, 11);
   }
 
@@ -490,7 +489,7 @@
   /* Other home sections                                                  */
   /* ------------------------------------------------------------------ */
 
-  // launch posters: the stack fans out on scroll; click to view full size
+  // size posters: the stack fans out on scroll; click to view full size
   function setupCampaign() {
     var box = document.getElementById('posterBox');
     var posters = gsap.utils.toArray('.poster');
@@ -518,11 +517,11 @@
     var deck = document.querySelector('.campaign__deck');
     var mm = gsap.matchMedia();
     mm.add('(min-width: 900px)', function () {
-      var fan = [-10, -3.5, 3.5, 10];
-      var rest = [-2, 1.2, -1.2, 2];
+      var fan = [-9, 0, 9];
+      var rest = [-2, 0, 2];
       gsap.fromTo(posters, {
         x: function (i, el) { return deck.offsetWidth / 2 - (el.offsetLeft + el.offsetWidth / 2); },
-        y: function (i) { return 50 + Math.abs(i - 1.5) * 22; },
+        y: function (i) { return 50 + Math.abs(i - 1) * 26; },
         rotation: function (i) { return fan[i]; },
         scale: 0.84
       }, {

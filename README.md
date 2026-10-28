@@ -5,9 +5,10 @@ Three pages, no build step: upload the files and it works.
 
 | Page | What's on it |
 | --- | --- |
-| `index.html` | 3D bottle hero (fill + cap intro, 200 ml / 500 ml / 1 L switcher with the poster taglines), scroll story *From source to sealed* (RO → UV → Ozonation → Minerals → Sealed), poster feature band, about, values, moments, products, launch-poster gallery, business, distributor CTA |
-| `enquiry.html` | Business enquiry form (type, sizes, quantity, distributor-only fields, contact details), 3D bottle that follows the chosen size, FAQ |
+| `index.html` | 3D bottle hero (fill + cap intro, 200 ml / 500 ml / 1 L switcher), scroll story *From source to sealed* (RO → UV → Ozonation → Minerals → Sealed), feature band, about, values, moments, products, PET bottles preview, poster gallery, business, distributor CTA |
+| `enquiry.html` | Enquiry form (type incl. empty PET bottles and distributorship, sizes, quantity, contact details), 3D bottle that follows the chosen size, FAQ |
 | `contact.html` | Call / WhatsApp / email / directions cards, contact form, Google Map |
+| `pet-bottles.html` | Empty PET bottles business: blowing-machine video hero, 3D *preform → bottle* scroll story, machine reel with chapters, sizes, why us, who buys, photo gallery, quote CTA |
 
 ## Preview locally
 
@@ -77,13 +78,25 @@ Links can pre-fill the enquiry form:
 
 - **Text:** edit the HTML files directly. The header, footer and icon sprite are repeated in all three pages, so update phone/email/address in each.
 - **Phone, WhatsApp, email used by scripts:** `assets/js/config.js`.
-- **3D bottle:** recreated from the launch posters (`source/gio-spark-posters.jpeg`):
+- **3D bottle:** recreated from the product posters (`source/gio-spark-posters.jpeg`):
   - square PET body with an embossed tile grid and a royal-blue cap;
   - navy front wrapper with a gold frame (`drawLabel()` in `assets/js/bottle.js`);
   - sizes and proportions are in `SPECS` at the top of the same file.
 - **Hero colours and copy per size** (including the poster stickers such as “Easy to carry anywhere!”): `THEMES` and `COPY` at the top of `assets/js/home.js`.
-- **Launch posters:** `assets/img/poster-*.jpg` are cut from the poster sheet. Swap in higher-resolution files with the same names whenever you have them.
+- **Posters:** `assets/img/poster-200.jpg`, `poster-500.jpg` and `poster-1000.jpg` are cut from the poster sheet, with the sheet's 2/3/4 numbering removed. Swap in higher-resolution files with the same names whenever you have them.
+- **Font:** the whole site uses Poppins (Google Fonts), including the text printed on the 3D label.
 - **Product images:** `assets/img/bottle-*.png` are renders of the same 3D bottle. Replace them with real product photos (transparent PNG) whenever you have them.
+
+## Photos and videos on the PET Bottles page
+
+These are royalty-free stock media. They are free for commercial use and need no attribution. They show PET bottle blowing in general, **not** the Chaudhary Enterprises factory. Replace them with photos and video of your own machines when you can, keeping the same file names.
+
+| Files | Source | Licence |
+| --- | --- | --- |
+| `assets/media/pet-oven.mp4`, `pet-line.mp4`, `pet-*.jpg`, `assets/img/pet/pet-feed.jpg`, `pet-output.jpg` | "Plastic bottle factory" by Ivan Fedorych, pexels.com/video/4177966 (trimmed and compressed) | Pexels License |
+| `assets/img/pet/pet-heating.jpg`, `pet-preforms.jpg` | Pixabay photos 2093092 and 2093083 by DanielaElenaTentis | Pixabay Content License |
+| `assets/img/pet/pet-conveyor.jpg`, `pet-machine.jpg`, `pet-factory.jpg`, `pet-empty-bottles.jpg`, `pet-empty-bottles-2.jpg` | Pexels photos 18631424, 18631423, 38336747, 5719837, 5719818 | Pexels License |
+| `assets/img/pet/empty-*.png` | Renders of the site's own 3D bottle | — |
 
 ## How it's built
 

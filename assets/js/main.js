@@ -515,6 +515,27 @@
     });
   }
 
+  /* ---------------- Background videos: play only while visible ---------------- */
+  function initVideos() {
+    var videos = Array.prototype.slice.call(document.querySelectorAll('video[data-autoplay]'));
+    if (!videos.length || reduce) return;
+    var play = function (v) {
+      if (v.dataset.userPaused) return;
+      if (v.preload === 'none') v.preload = 'auto';
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});
+    };
+    videos.forEach(function (v) { v.muted = true; });
+    if (!('IntersectionObserver' in window)) { videos.forEach(play); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) play(e.target);
+        else e.target.pause();
+      });
+    }, { threshold: 0.2 });
+    videos.forEach(function (v) { io.observe(v); });
+  }
+
   /* ---------------- Misc ---------------- */
   function initYear() {
     var y = String(new Date().getFullYear());
@@ -559,6 +580,7 @@
   initForms();
   initYear();
   initFloaters();
+  initVideos();
 
   if (hasGsap) {
     window.addEventListener('load', function () { ScrollTrigger.refresh(); });
