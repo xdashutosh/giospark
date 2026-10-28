@@ -165,6 +165,7 @@
       stage.dragging = true;
       lastX = e.clientX;
       hideHint();
+      autoHold(true);
     });
     window.addEventListener('pointermove', function (e) {
       if (!dragging) return;
@@ -173,7 +174,7 @@
       stage.dragAngle += dx * 0.011;
       stage.dragVel = dx * 0.011;
     }, { passive: true });
-    var end = function () { if (!dragging) return; dragging = false; stage.dragging = false; };
+    var end = function () { if (!dragging) return; dragging = false; stage.dragging = false; autoHold(false); };
     window.addEventListener('pointerup', end);
     window.addEventListener('pointercancel', end);
     setTimeout(hideHint, 9000);
@@ -206,17 +207,19 @@
       b.addEventListener('click', function () {
         var dir = parseInt(b.dataset.dir, 10);
         go(index + dir, dir);
+        autoSchedule();
       });
     });
     tabs.forEach(function (t) {
-      t.addEventListener('click', function () { go(ORDER.indexOf(t.dataset.size)); });
+      t.addEventListener('click', function () { go(ORDER.indexOf(t.dataset.size)); autoSchedule(); });
     });
     document.addEventListener('keydown', function (e) {
       if (window.scrollY > window.innerHeight * 0.5 || e.target.closest('input, textarea, select')) return;
-      if (e.key === 'ArrowRight') go(index + 1, 1);
-      else if (e.key === 'ArrowLeft') go(index - 1, -1);
+      if (e.key === 'ArrowRight') { go(index + 1, 1); autoSchedule(); }
+      else if (e.key === 'ArrowLeft') { go(index - 1, -1); autoSchedule(); }
     });
     window.addEventListener('resize', function () { movePill(false); });
+    setupAuto();
 
     if (reduce) return;
 
@@ -256,6 +259,56 @@
     gsap.to('.hero__intro, .hero__controls, .hero__badge, .hero__features, .hero__sizes, .hero__hint, .hero__sticker', {
       autoAlpha: 0, y: -40, ease: 'none',
       scrollTrigger: { trigger: hero, start: 'top top', end: '45% top', scrub: true }
+    });
+  }
+
+  /* ---------------- Size slideshow: 200 ml → 500 ml → 1 litre, 5 s each, looping ---------------- */
+  var AUTO_MS = 5000;
+  var auto = { timer: null, bar: null, started: false, paused: false, held: false, inView: true };
+  var autoBtn = document.querySelector('.hero__auto');
+  var autoProgress = document.querySelector('.hero__sizes-progress');
+
+  function autoAllowed() {
+    return !!stage && !reduce && auto.started && !auto.paused && !auto.held && auto.inView && !document.hidden;
+  }
+
+  function autoSchedule() {
+    clearTimeout(auto.timer);
+    if (auto.bar) auto.bar.kill();
+    gsap.set(autoProgress, { scaleX: 0 });
+    if (!autoAllowed()) return;
+    auto.bar = gsap.to(autoProgress, { scaleX: 1, duration: AUTO_MS / 1000, ease: 'none' });
+    auto.timer = setTimeout(function () {
+      if (!autoAllowed()) return;
+      go(index + 1, 1);
+      autoSchedule();
+    }, AUTO_MS);
+  }
+
+  function autoHold(on) {
+    auto.held = on;
+    autoSchedule();
+  }
+
+  function autoStart() {
+    auto.started = true;
+    autoSchedule();
+  }
+
+  function setupAuto() {
+    if (autoBtn) {
+      autoBtn.addEventListener('click', function () {
+        auto.paused = !auto.paused;
+        autoBtn.setAttribute('aria-pressed', String(auto.paused));
+        autoBtn.setAttribute('aria-label', auto.paused ? 'Play the size slideshow' : 'Pause the size slideshow');
+        autoSchedule();
+      });
+    }
+    document.addEventListener('visibilitychange', autoSchedule);
+    // pause once most of the hero has scrolled away
+    ScrollTrigger.create({
+      trigger: hero, start: 'top bottom', end: 'bottom 40%',
+      onToggle: function (self) { auto.inView = self.isActive; autoSchedule(); }
     });
   }
 
@@ -366,7 +419,7 @@
       return;
     }
 
-    var tl = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: function () { busy = false; } });
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: function () { busy = false; autoStart(); } });
 
     if (window.SplitText) {
       var top = SplitText.create('.hero__line--front', { type: 'chars', mask: 'chars' });

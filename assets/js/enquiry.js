@@ -24,10 +24,15 @@
   if (product) {
     var box = form.querySelector('input[name="sizes"][data-size="' + product + '"]');
     if (box) box.checked = true;
+    // PET bottles are made to order, so the size is a free-text field there
+    var PET_SIZES = { '200': '200 ml', '500': '500 ml', '1000': '1 litre' };
+    var petSize = form.querySelector('#pet_size');
+    if (type === 'pet' && petSize && PET_SIZES[product]) petSize.value = PET_SIZES[product];
   }
 
-  /* ---------------- Fields that only apply to one enquiry type ---------------- */
+  /* ---------------- Fields that only apply to (or are hidden for) one enquiry type ---------------- */
   var conditionals = Array.prototype.slice.call(document.querySelectorAll('.conditional[data-for]'));
+  var hideables = Array.prototype.slice.call(form.querySelectorAll('[data-hide-for]'));
   var refresh = function () { if (window.ScrollTrigger) ScrollTrigger.refresh(); };
 
   function chosenType() {
@@ -35,8 +40,18 @@
     return checked ? checked.dataset.key : '';
   }
 
+  function hiddenFor(el, t) { return el.dataset.hideFor.split(' ').indexOf(t) > -1; }
+
   function syncConditional(animate) {
-    conditionals.forEach(function (cond) { toggleBlock(cond, cond.dataset.for === chosenType(), animate); });
+    var t = chosenType();
+    conditionals.forEach(function (cond) { toggleBlock(cond, cond.dataset.for === t, animate); });
+    hideables.forEach(function (el) { toggleBlock(el, !hiddenFor(el, t), animate); });
+    // keep the step numbers in order when a step is hidden
+    var n = 0;
+    form.querySelectorAll('.fieldset').forEach(function (fs) {
+      var num = fs.querySelector('.fieldset__legend .num');
+      if (num && !(fs.dataset.hideFor && hiddenFor(fs, t))) num.textContent = String(++n);
+    });
     if (stage) {
       stage.shared.empty = chosenType() === 'pet' ? 1 : 0;
     } else {
@@ -50,23 +65,36 @@
   }
 
   function toggleBlock(cond, on, animate) {
+    // track the wanted state, so switching back mid-animation still lands right
+    var shown = cond.dataset.shown ? cond.dataset.shown === '1' : !cond.hidden;
+    if (on === shown) return;
+    cond.dataset.shown = on ? '1' : '0';
     var fields = cond.querySelectorAll('input, select, textarea');
-    if (on === !cond.hidden) return;
     var tween = animate && hasGsap && !reduce;
+    var settle = function () {
+      if (hasGsap) gsap.set(cond, { clearProps: 'height,opacity,visibility,overflow' });
+      refresh();
+    };
+    if (hasGsap) gsap.killTweensOf(cond);
     if (on) {
+      var wasHidden = cond.hidden;
       cond.hidden = false;
       fields.forEach(function (f) { f.disabled = false; });
-      if (tween) gsap.fromTo(cond, { height: 0, autoAlpha: 0 }, { height: 'auto', autoAlpha: 1, duration: 0.6, ease: 'power3.out', onComplete: refresh });
-      else refresh();
+      if (tween) {
+        gsap.set(cond, wasHidden ? { height: 0, autoAlpha: 0, overflow: 'hidden' } : { overflow: 'hidden' });
+        gsap.to(cond, { height: 'auto', autoAlpha: 1, duration: 0.6, ease: 'power3.out', onComplete: settle });
+      } else {
+        settle();
+      }
     } else {
       fields.forEach(function (f) { f.disabled = true; });
-      var done = function () {
-        cond.hidden = true;
-        if (hasGsap) gsap.set(cond, { clearProps: 'height,opacity,visibility' });
-        refresh();
-      };
-      if (tween) gsap.to(cond, { height: 0, autoAlpha: 0, duration: 0.45, ease: 'power3.inOut', onComplete: done });
-      else done();
+      var done = function () { cond.hidden = true; settle(); };
+      if (tween) {
+        gsap.set(cond, { overflow: 'hidden' });
+        gsap.to(cond, { height: 0, autoAlpha: 0, duration: 0.45, ease: 'power3.inOut', onComplete: done });
+      } else {
+        done();
+      }
     }
   }
   /* ---------------- 3D bottle in the hero ---------------- */

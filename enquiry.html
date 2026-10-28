@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Manrope:wght@400..800&family=Kalam:wght@700&display=swap">
   <link rel="stylesheet" href="assets/css/style.css">
   <script>
     (function (d) {
@@ -69,6 +69,7 @@
     <symbol id="i-bubbles" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><circle cx="16.5" cy="9" r="3"/><circle cx="15.5" cy="18" r="1.8"/><circle cx="9" cy="6" r="1.5"/></symbol>
     <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9.5 4 8 9l4 11 4-11-1.5-5"/></symbol>
     <symbol id="i-bottle" viewBox="0 0 24 24"><path d="M10 2.5h4V5h-4zM10 5c0 2-3 3-3 6v8.5A2.5 2.5 0 0 0 9.5 22h5a2.5 2.5 0 0 0 2.5-2.5V11c0-3-3-4-3-6"/><path d="M7 13.5h10"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3.5 15.5 15.5 3.5l5 5-12 12z"/><path d="m7 12 2 2M10 9l2 2M13 6l2 2"/></symbol>
     <symbol id="i-drag" viewBox="0 0 24 24"><path d="M8 12H3m0 0 3-3m-3 3 3 3M16 12h5m0 0-3-3m3 3-3 3"/><circle cx="12" cy="12" r="1.6"/></symbol>
     <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="M21 3 14 21l-4-7-7-4z"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
@@ -181,6 +182,16 @@
                   <h4><svg class="icon"><use href="#i-bottle"/></svg>Empty PET bottle details</h4>
                   <div class="fields">
                     <div class="field">
+                      <label for="pet_size">Bottle size(s) <span class="req">*</span></label>
+                      <input class="input" id="pet_size" name="pet_size" data-label="Bottle size(s)" required disabled placeholder="e.g. 250 ml, 500 ml, 2 litre" data-msg="Please tell us the bottle size or sizes you need.">
+                      <p class="field__error" role="alert"></p>
+                    </div>
+                    <div class="field">
+                      <label for="pet_quantity">Bottles needed <span class="req">*</span></label>
+                      <input class="input" id="pet_quantity" name="pet_quantity" data-label="Bottles needed" required disabled placeholder="e.g. 20,000 per month" data-msg="Please tell us roughly how many bottles you need.">
+                      <p class="field__error" role="alert"></p>
+                    </div>
+                    <div class="field">
                       <label for="pet_use">What will you fill them with?</label>
                       <select class="select" id="pet_use" name="pet_use" data-label="Bottles for" disabled>
                         <option value="">Select</option>
@@ -191,9 +202,8 @@
                       </select>
                     </div>
                     <div class="field">
-                      <label for="pet_quantity">Bottles needed <span class="req">*</span></label>
-                      <input class="input" id="pet_quantity" name="pet_quantity" data-label="Bottles needed" required disabled placeholder="e.g. 20,000 per month" data-msg="Please tell us roughly how many bottles you need.">
-                      <p class="field__error" role="alert"></p>
+                      <label for="pet_details">Shape / design <span class="opt">(optional)</span></label>
+                      <input class="input" id="pet_details" name="pet_details" data-label="Shape / design details" disabled placeholder="e.g. round, square, neck size, a sample to match">
                     </div>
                   </div>
                 </div>
@@ -231,7 +241,7 @@
               </div>
             </fieldset>
 
-            <fieldset class="fieldset" data-required-group data-label="Bottle sizes" data-msg="Please choose at least one bottle size.">
+            <fieldset class="fieldset" data-required-group data-hide-for="pet" data-label="Bottle sizes" data-msg="Please choose at least one bottle size.">
               <legend class="fieldset__legend"><span class="num">2</span>Which bottle sizes? <span style="color:#e2483d">*</span> <small>Choose one or more</small></legend>
               <div class="size-grid">
                 <label class="choice size-choice"><input type="checkbox" name="sizes" value="200 ml" data-size="200"><span class="choice__box"><img src="assets/img/bottle-200.png" alt="" width="84" height="268" loading="lazy"><strong>200 ml</strong><span>Pocket size</span><span class="choice__check"><svg class="icon"><use href="#i-check"/></svg></span></span></label>
@@ -255,7 +265,7 @@
                     <option>Not sure yet</option>
                   </select>
                 </div>
-                <div class="field">
+                <div class="field" data-hide-for="pet">
                   <label for="quantity">Approximate quantity <span class="opt">(optional)</span></label>
                   <input class="input" id="quantity" name="quantity" data-label="Quantity" placeholder="e.g. 100 cartons a month">
                 </div>
@@ -428,7 +438,7 @@
           </div>
           <div class="faq__item">
             <button class="faq__q" type="button" aria-expanded="false" aria-controls="faq-6">Do you sell empty PET bottles?<span class="pm" aria-hidden="true"></span></button>
-            <div class="faq__a" id="faq-6"><p>Yes. We run our own PET blowing machines and supply empty PET bottles in 200 ml, 500 ml and 1 litre sizes. Choose “Empty PET bottles” in the form and tell us how many you need, or <a href="pet-bottles.html" style="font-weight:700;color:var(--blue)">see our PET bottles</a>.</p></div>
+            <div class="faq__a" id="faq-6"><p>Yes. We run our own PET blowing machines and make empty PET bottles to order for customers and wholesalers — in the size, shape and quantity you need. Choose “Empty PET bottles” in the form and tell us what you need, or <a href="pet-bottles.html" style="font-weight:700;color:var(--blue)">see our PET bottles</a>.</p></div>
           </div>
           <div class="faq__item">
             <button class="faq__q" type="button" aria-expanded="false" aria-controls="faq-4">How can I become a distributor?<span class="pm" aria-hidden="true"></span></button>

@@ -1,14 +1,14 @@
 # GIO Spark — website
 
 Static website for **GIO Spark** packaged drinking water with added minerals (Chaudhary Enterprises).
-Three pages, no build step: upload the files and it works.
+Four pages, no build step: upload the files and it works.
 
 | Page | What's on it |
 | --- | --- |
-| `index.html` | 3D bottle hero (fill + cap intro, 200 ml / 500 ml / 1 L switcher), scroll story *From source to sealed* (RO → UV → Ozonation → Minerals → Sealed), feature band, about, values, moments, products, PET bottles preview, poster gallery, business, distributor CTA |
-| `enquiry.html` | Enquiry form (type incl. empty PET bottles and distributorship, sizes, quantity, contact details), 3D bottle that follows the chosen size, FAQ |
-| `contact.html` | Call / WhatsApp / email / directions cards, contact form, Google Map |
-| `pet-bottles.html` | Empty PET bottles business: blowing-machine video hero, 3D *preform → bottle* scroll story, machine reel with chapters, sizes, why us, who buys, photo gallery, quote CTA |
+| `index.html` | 3D bottle hero (fill + cap intro, 200 ml / 500 ml / 1 L switcher that moves on by itself every 5 s), scroll story *From source to sealed* (RO → UV → Ozonation → Minerals → Sealed), feature band, about, values, moments, products, PET bottles preview, poster gallery, business, distributor CTA |
+| `enquiry.html` | Enquiry form (type incl. empty PET bottles and distributorship, sizes, quantity, contact details), 3D bottle that follows the chosen size, FAQ. Choosing *Empty PET bottles* swaps the size boxes for free-text size, quantity and shape fields, since those bottles are made to order |
+| `contact.html` | Call / WhatsApp / email / directions cards, contact form, Google Map pinned on the factory |
+| `pet-bottles.html` | Empty PET bottles business: blowing-machine video hero, 3D *preform → bottle* scroll story, machine reel with chapters, popular sizes plus a *custom bottles* banner (any size, shape and quantity, made to order), why us, who buys, photo gallery, quote CTA |
 
 ## Preview locally
 
@@ -73,18 +73,22 @@ Links can pre-fill the enquiry form:
 
 - `enquiry.html?type=distributor` — also `retail`, `corporate`, `hospitality`, `events`, `home`, `other`
 - `enquiry.html?product=500` — also `200`, `1000`
+- `enquiry.html?type=pet&product=500` — the empty PET bottle form with "500 ml" already in the size field
 
 ## Editing content
 
-- **Text:** edit the HTML files directly. The header, footer and icon sprite are repeated in all three pages, so update phone/email/address in each.
+- **Text:** edit the HTML files directly. The header, footer and icon sprite are repeated in every page, so update phone/email/address in each.
 - **Phone, WhatsApp, email used by scripts:** `assets/js/config.js`.
 - **3D bottle:** recreated from the product posters (`source/gio-spark-posters.jpeg`):
   - square PET body with an embossed tile grid and a royal-blue cap;
   - navy front wrapper with a gold frame (`drawLabel()` in `assets/js/bottle.js`);
   - sizes and proportions are in `SPECS` at the top of the same file.
 - **Hero colours and copy per size** (including the poster stickers such as “Easy to carry anywhere!”): `THEMES` and `COPY` at the top of `assets/js/home.js`.
+- **Hero slideshow:** the hero moves to the next size every 5 seconds (`AUTO_MS` in `assets/js/home.js`), with a progress line under the active size and a pause button. It waits while a visitor drags the bottle, and stops when the hero is off screen or the tab is hidden. Clicking a size or arrow restarts the 5 seconds.
+- **Factory map:** the map and *Directions* buttons on `contact.html` point at the factory, 29.2981702, 77.7303878. To move the pin, change these coordinates in the two directions links, the map `iframe` and the `geo` block in the page's JSON-LD.
+- **Empty PET bottles** are made to order (any size, shape and quantity). The 200 ml / 500 ml / 1 litre cards on `pet-bottles.html` are only popular examples.
 - **Posters:** `assets/img/poster-200.jpg`, `poster-500.jpg` and `poster-1000.jpg` are cut from the poster sheet, with the sheet's 2/3/4 numbering removed. Swap in higher-resolution files with the same names whenever you have them.
-- **Font:** the whole site uses Poppins (Google Fonts), including the text printed on the 3D label.
+- **Fonts (Google Fonts):** headings use Poppins, body text uses Manrope and the handwritten taglines use Kalam. The text printed on the 3D label is Poppins.
 - **Product images:** `assets/img/bottle-*.png` are renders of the same 3D bottle. Replace them with real product photos (transparent PNG) whenever you have them.
 
 ## Photos and videos on the PET Bottles page

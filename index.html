@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Manrope:wght@400..800&family=Kalam:wght@700&display=swap">
   <link rel="stylesheet" href="assets/css/style.css">
   <script>
     (function (d) {
@@ -95,6 +95,7 @@
     <symbol id="i-bubbles" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><circle cx="16.5" cy="9" r="3"/><circle cx="15.5" cy="18" r="1.8"/><circle cx="9" cy="6" r="1.5"/></symbol>
     <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9.5 4 8 9l4 11 4-11-1.5-5"/></symbol>
     <symbol id="i-bottle" viewBox="0 0 24 24"><path d="M10 2.5h4V5h-4zM10 5c0 2-3 3-3 6v8.5A2.5 2.5 0 0 0 9.5 22h5a2.5 2.5 0 0 0 2.5-2.5V11c0-3-3-4-3-6"/><path d="M7 13.5h10"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3.5 15.5 15.5 3.5l5 5-12 12z"/><path d="m7 12 2 2M10 9l2 2M13 6l2 2"/></symbol>
     <symbol id="i-drag" viewBox="0 0 24 24"><path d="M8 12H3m0 0 3-3m-3 3 3 3M16 12h5m0 0-3-3m3 3-3 3"/><circle cx="12" cy="12" r="1.6"/></symbol>
     <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="M21 3 14 21l-4-7-7-4z"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
@@ -262,11 +263,14 @@
         <div class="feature"><h2 class="feature__title" data-f="t1">Made for retail</h2><p class="feature__text" data-f="p1">Easy to stock for general stores, kiosks, counters and canteens.</p></div>
       </div>
 
-      <div class="hero__sizes" role="tablist" aria-label="Choose a bottle size">
-        <span class="hero__sizes-pill" aria-hidden="true"></span>
-        <button type="button" role="tab" aria-selected="false" data-size="200">200 ml</button>
-        <button type="button" role="tab" aria-selected="true" data-size="500">500 ml</button>
-        <button type="button" role="tab" aria-selected="false" data-size="1000">1 litre</button>
+      <div class="hero__sizes">
+        <span class="hero__sizes-pill" aria-hidden="true"><i class="hero__sizes-progress"></i></span>
+        <div class="hero__tabs" role="tablist" aria-label="Choose a bottle size">
+          <button type="button" role="tab" aria-selected="false" data-size="200">200 ml</button>
+          <button type="button" role="tab" aria-selected="true" data-size="500">500 ml</button>
+          <button type="button" role="tab" aria-selected="false" data-size="1000">1 litre</button>
+        </div>
+        <button class="hero__auto" type="button" aria-pressed="false" aria-label="Pause the size slideshow"><svg class="icon hero__auto-pause"><use href="#i-pause"/></svg><svg class="icon hero__auto-play"><use href="#i-play"/></svg></button>
       </div>
 
       <div class="hero__hint" aria-hidden="true"><svg class="icon"><use href="#i-drag"/></svg> Drag to spin</div>
@@ -558,10 +562,10 @@
           <div class="pet-teaser__copy">
             <p class="eyebrow eyebrow--light">Also from Chaudhary Enterprises</p>
             <h2 class="h2" id="pet-teaser-title" data-split>Empty PET bottles, blown in-house.</h2>
-            <p data-reveal>We run our own PET blowing machines, so alongside GIO Spark water we also make and supply empty PET bottles to other businesses.</p>
+            <p data-reveal>We run our own PET blowing machines, so alongside GIO Spark water we also make empty PET bottles to order — in the size, shape and quantity each customer or wholesaler needs.</p>
             <ul class="pet-teaser__chips" data-reveal-group>
-              <li><svg class="icon"><use href="#i-bottle"/></svg>200 ml · 500 ml · 1 litre</li>
-              <li><svg class="icon"><use href="#i-truck"/></svg>Bulk supply</li>
+              <li><svg class="icon"><use href="#i-bottle"/></svg>Custom sizes &amp; shapes</li>
+              <li><svg class="icon"><use href="#i-truck"/></svg>Bulk &amp; wholesale supply</li>
               <li><svg class="icon"><use href="#i-building"/></svg>Direct from the manufacturer</li>
             </ul>
             <div class="pet-teaser__actions" data-reveal>

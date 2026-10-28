@@ -16,8 +16,10 @@
 
 const LABELS = {
   type: 'Enquiry type',
-  pet_use: 'Bottles for',
+  pet_size: 'Bottle size(s)',
   pet_quantity: 'Bottles needed',
+  pet_use: 'Bottles for',
+  pet_details: 'Shape / design details',
   territory: 'Territory',
   distribution_experience: 'Distribution experience',
   storage: 'Storage space',

@@ -174,6 +174,17 @@
     });
   }
 
+  /* ---------------- Custom bottles banner: the shapes pop up one by one ---------------- */
+  function initCustom() {
+    var art = document.querySelector('.pet-custom__art');
+    if (!art || !hasGsap || reduce) return;
+    gsap.from(art.querySelectorAll('.pet-custom__bottle'), {
+      y: 60, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.7)', stagger: 0.1,
+      scrollTrigger: { trigger: art, start: 'top 85%', once: true }
+    });
+  }
+
   initReel();
   initBlow();
+  initCustom();
 })();
